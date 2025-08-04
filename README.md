@@ -76,17 +76,12 @@ This strategy is designed to be run in TradingView’s Strategy Tester. It allow
 5. Open Strategy Settings (gear icon) to configure filters
 6. Run backtest and export results if needed
 
----
 
-## 🛠️ Customization Ideas
-
-- Add ATR-based stop loss and take profit
-- Add session filtering (RTH vs Globex)
-- Add sentiment/news filters via webhook
-- Visualize pattern zones with background highlights
 
 ---
 
 ### Author:
 
-This version is designed for full practical use in live markets or historical evaluation. Sunny Chase, All rights reserved, 2025
+This version is designed for full practical use in live markets or historical evaluation. 
+
+Sunny Chase, All rights reserved, 2025
