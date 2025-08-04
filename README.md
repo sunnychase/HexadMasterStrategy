@@ -63,7 +63,8 @@ Use built-in alert conditions:
 This strategy is designed to be run in TradingView’s Strategy Tester. It allows you to:
 - Visualize every signal with arrows
 - Adjust filters to balance aggressiveness and accuracy
-- Measure historical profitability on any ticker or timeframe
+- **Hexad Reserved Pattern**: In Japanese candlestick theory, consistent multi-bar patterns (like 5+ candles of one color) often precede mean-reverting or breakout behavior. This script aims to ride the continuation.
+- Designed for **15-min and 1-hour charts** by default, but works on any timeframe.
 
 ---
 
@@ -75,8 +76,6 @@ This strategy is designed to be run in TradingView’s Strategy Tester. It allow
 4. Click “Add to Chart”
 5. Open Strategy Settings (gear icon) to configure filters
 6. Run backtest and export results if needed
-
-
 
 ---
 
