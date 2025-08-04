@@ -1,0 +1,88 @@
+//@version=5
+strategy("Hexad Master Strategy (Filtered)", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+
+// === User Inputs ===
+enable_mtf = input.bool(false, title="Enable Multi-Timeframe Mode?")
+htf = input.timeframe("60", title="Higher Timeframe for MTF Mode")
+barsHold = input.int(5, title="Bars to Hold Position (Fallback)")
+use_trend_filter = input.bool(true, title="Enable Trend Filter (EMA 50)")
+use_volume_filter = input.bool(true, title="Enable Volume Filter")
+use_rsi_filter = input.bool(true, title="Enable RSI Oversold/Overbought Filter")
+use_candle_confirmation = input.bool(true, title="Enable Candle Confirmation")
+
+// === Function to support MTF or regular series ===
+get_price(src, use_mtf) =>
+    use_mtf ? request.security(syminfo.tickerid, htf, src) : src
+
+// === Manually assign 6 candles
+o = array.new_float(6)
+c = array.new_float(6)
+h = array.new_float(6)
+l = array.new_float(6)
+
+array.set(o, 0, get_price(open[0], enable_mtf))
+array.set(o, 1, get_price(open[1], enable_mtf))
+array.set(o, 2, get_price(open[2], enable_mtf))
+array.set(o, 3, get_price(open[3], enable_mtf))
+array.set(o, 4, get_price(open[4], enable_mtf))
+array.set(o, 5, get_price(open[5], enable_mtf))
+
+array.set(c, 0, get_price(close[0], enable_mtf))
+array.set(c, 1, get_price(close[1], enable_mtf))
+array.set(c, 2, get_price(close[2], enable_mtf))
+array.set(c, 3, get_price(close[3], enable_mtf))
+array.set(c, 4, get_price(close[4], enable_mtf))
+array.set(c, 5, get_price(close[5], enable_mtf))
+
+array.set(h, 0, get_price(high[0], enable_mtf))
+array.set(h, 1, get_price(high[1], enable_mtf))
+array.set(h, 2, get_price(high[2], enable_mtf))
+array.set(h, 3, get_price(high[3], enable_mtf))
+array.set(h, 4, get_price(high[4], enable_mtf))
+array.set(h, 5, get_price(high[5], enable_mtf))
+
+array.set(l, 0, get_price(low[0], enable_mtf))
+array.set(l, 1, get_price(low[1], enable_mtf))
+array.set(l, 2, get_price(low[2], enable_mtf))
+array.set(l, 3, get_price(low[3], enable_mtf))
+array.set(l, 4, get_price(low[4], enable_mtf))
+array.set(l, 5, get_price(low[5], enable_mtf))
+
+// === Pattern Conditions ===
+bullish_hexad = array.get(c, 5) < array.get(o, 5) and                 array.get(c, 4) < array.get(o, 4) and                 array.get(c, 3) < array.get(o, 3) and                 array.get(c, 2) > array.get(o, 2) and                 array.get(c, 1) > array.get(o, 1) and                 array.get(c, 0) > array.get(o, 0) and                 array.get(c, 0) > array.get(h, 5)
+
+bearish_hexad = array.get(c, 5) > array.get(o, 5) and                 array.get(c, 4) > array.get(o, 4) and                 array.get(c, 3) > array.get(o, 3) and                 array.get(c, 2) < array.get(o, 2) and                 array.get(c, 1) < array.get(o, 1) and                 array.get(c, 0) < array.get(o, 0) and                 array.get(c, 0) < array.get(l, 5)
+
+// === Additional Filters ===
+ema50 = ta.ema(close, 50)
+trend_long = not use_trend_filter or close > ema50
+trend_short = not use_trend_filter or close < ema50
+
+vol_filter = not use_volume_filter or volume > ta.sma(volume, 20)
+rsi = ta.rsi(close, 14)
+rsi_long = not use_rsi_filter or rsi < 30
+rsi_short = not use_rsi_filter or rsi > 70
+
+bullish_confirm = not use_candle_confirmation or (close > high[1] and close > open)
+bearish_confirm = not use_candle_confirmation or (close < low[1] and close < open)
+
+// === Entry Logic ===
+long_entry = bullish_hexad and bullish_confirm and vol_filter and rsi_long and trend_long
+short_entry = bearish_hexad and bearish_confirm and vol_filter and rsi_short and trend_short
+
+if long_entry
+    strategy.entry("Long", strategy.long)
+
+if short_entry
+    strategy.entry("Short", strategy.short)
+
+// === Exit Logic ===
+strategy.exit("Exit Long", from_entry="Long", trail_points=2, trail_offset=1)
+strategy.exit("Exit Short", from_entry="Short", trail_points=2, trail_offset=1)
+
+// === Visuals & Alerts ===
+plotshape(bullish_hexad, title="Bullish Hexad", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(bearish_hexad, title="Bearish Hexad", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+
+alertcondition(long_entry, title="Bullish Hexad Alert", message="Filtered Bullish Hexad pattern detected")
+alertcondition(short_entry, title="Bearish Hexad Alert", message="Filtered Bearish Hexad pattern detected")
