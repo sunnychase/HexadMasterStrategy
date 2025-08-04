@@ -1,0 +1,2 @@
+# HexadMasterStrategy
+Hexad Master Strategy
