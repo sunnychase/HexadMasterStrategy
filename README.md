@@ -27,10 +27,11 @@ This pattern helps catch **early reversals** in short-term price structure, espe
 
 - Scans for valid Hexad patterns in either current or higher timeframe (MTF option).
 - Applies confirmation filters:
-  - EMA 50 for trend alignment
-  - RSI for momentum check
-  - Volume for conviction
-  - Final candle breakout confirmation
+  - `EMA 50`: Trend direction filter
+  - `SMA 20 Volume`: Used for volume confirmation
+  - `RSI 14`: Momentum filter
+  - `9DMA`: Plotted for trend-following confirmation
+  - `Candle`: Final candle breakout confirmation
 - Executes **long or short trades** when all criteria are met.
 - Uses a **trailing stop** for dynamic exits rather than a fixed bar count.
 
@@ -55,6 +56,14 @@ This pattern helps catch **early reversals** in short-term price structure, espe
 Use built-in alert conditions:
 - `Bullish Hexad Alert`
 - `Bearish Hexad Alert`
+
+---
+
+## 📊 Visual Elements
+
+- 🔺 Green Triangle: Bullish Hexad Pattern Detected
+- 🔻 Red Triangle: Bearish Hexad Pattern Detected
+- 🔵 Blue Line: 9DMA
 
 ---
 
