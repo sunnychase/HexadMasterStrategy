@@ -1,5 +1,6 @@
+
 //@version=5
-strategy("Hexad Master Strategy (Filtered)", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+strategy("Hexad Master Strategy (Filtered + 9DMA)", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
 
 // === User Inputs ===
 enable_mtf = input.bool(false, title="Enable Multi-Timeframe Mode?")
@@ -49,12 +50,14 @@ array.set(l, 4, get_price(low[4], enable_mtf))
 array.set(l, 5, get_price(low[5], enable_mtf))
 
 // === Pattern Conditions ===
-bullish_hexad = array.get(c, 5) < array.get(o, 5) and                 array.get(c, 4) < array.get(o, 4) and                 array.get(c, 3) < array.get(o, 3) and                 array.get(c, 2) > array.get(o, 2) and                 array.get(c, 1) > array.get(o, 1) and                 array.get(c, 0) > array.get(o, 0) and                 array.get(c, 0) > array.get(h, 5)
-
-bearish_hexad = array.get(c, 5) > array.get(o, 5) and                 array.get(c, 4) > array.get(o, 4) and                 array.get(c, 3) > array.get(o, 3) and                 array.get(c, 2) < array.get(o, 2) and                 array.get(c, 1) < array.get(o, 1) and                 array.get(c, 0) < array.get(o, 0) and                 array.get(c, 0) < array.get(l, 5)
+bullish_hexad = array.get(c, 5) < array.get(o, 5) and array.get(c, 4) < array.get(o, 4) and array.get(c, 3) < array.get(o, 3) and array.get(c, 2) > array.get(o, 2) and array.get(c, 1) > array.get(o, 1) and array.get(c, 0) > array.get(o, 0) and array.get(c, 0) > array.get(h, 5)
+bearish_hexad = array.get(c, 5) > array.get(o, 5) and array.get(c, 4) > array.get(o, 4) and array.get(c, 3) > array.get(o, 3) and array.get(c, 2) < array.get(o, 2) and array.get(c, 1) < array.get(o, 1) and array.get(c, 0) < array.get(o, 0) and array.get(c, 0) < array.get(l, 5)
 
 // === Additional Filters ===
 ema50 = ta.ema(close, 50)
+dma9 = ta.sma(close, 9)
+plot(dma9, title="9 DMA", color=color.orange, linewidth=2)
+
 trend_long = not use_trend_filter or close > ema50
 trend_short = not use_trend_filter or close < ema50
 
@@ -86,3 +89,4 @@ plotshape(bearish_hexad, title="Bearish Hexad", style=shape.triangledown, locati
 
 alertcondition(long_entry, title="Bullish Hexad Alert", message="Filtered Bullish Hexad pattern detected")
 alertcondition(short_entry, title="Bearish Hexad Alert", message="Filtered Bearish Hexad pattern detected")
+
